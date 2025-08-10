@@ -25,24 +25,13 @@ import pdb
 class ControlledUnetModel(UNetModel):
     def forward(self, x, timesteps=None, context=None, control=None, only_mid_control=False, **kwargs):
         hs = []
-        # with torch.no_grad():
-        #     # import pdb;pdb.set_trace()
-        #     t_emb = timestep_embedding(timesteps, self.model_channels, repeat_only=False)
-        #     # geo_emb =self.geo_embed(geo_embedding)
-        #     emb = self.time_embed(t_emb)
-        #     # emb = emb + geo_emb
-        #     h = x.type(self.dtype)
-        #     for module in self.input_blocks:
-        #         h = module(h, emb, context)
-        #         hs.append(h)
-        #     h = self.middle_block(h, emb, context)
 
         
         # import pdb;pdb.set_trace()
         t_emb = timestep_embedding(timesteps, self.model_channels, repeat_only=False)
-        # geo_emb =self.geo_embed(geo_embedding)
+       
         emb = self.time_embed(t_emb)
-        # emb = emb + geo_emb
+
         h = x.type(self.dtype)
         for module in self.input_blocks:
             h = module(h, emb, context)
@@ -55,7 +44,6 @@ class ControlledUnetModel(UNetModel):
             h += control.pop()
 
         for i, module in enumerate(self.output_blocks):
-            # import pdb;pdb.set_trace()
             if only_mid_control or control is None:
                 h = torch.cat([h, hs.pop()], dim=1)
             else:
